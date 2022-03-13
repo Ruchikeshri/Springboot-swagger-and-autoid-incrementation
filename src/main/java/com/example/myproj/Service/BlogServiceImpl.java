@@ -1,7 +1,6 @@
 package com.example.myproj.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.example.myproj.Exception.BlogAlreadyExistsException;
 import com.example.myproj.Exception.BlogNotFoundException;
@@ -25,10 +24,15 @@ public class BlogServiceImpl implements BlogService{
 	@Override
 	public Blog SaveBlog(Blog blog) throws BlogAlreadyExistsException {
 		// TODO Auto-generated method stub
-		if(blogRepository.existsById(blog.getBlogId()))
+//		if(blogRepository.existsById(blog.getBlogId()))
+//		{
+//			throw new BlogAlreadyExistsException();
+//
+//		}
+		Optional<Blog> optional = Optional.ofNullable(blogRepository.findByName(blog.getAuthorName()));
+		if(optional.isPresent())
 		{
-			throw new BlogAlreadyExistsException();
-
+			throw new BlogAlreadyExistsException("BlogAlreadyExists");
 		}
 	else
 		{
@@ -40,11 +44,28 @@ public class BlogServiceImpl implements BlogService{
 	@Override
 	public List<Blog> getAllBlogs() {
 		// TODO Auto-generated method stub
-		
-		return(List<Blog>) blogRepository.findAll();
-		
-	}
+		List<Blog> b1 = blogRepository.findAll();
+//		Collections.sort(b1,new Comparator<Blog>(){
+//			@Override
+//			public int compare(Blog o1, Blog o2) {
+//				return o1.getAuthorName().compareTo(o2.getAuthorName());}
+//		});
+//		Collections.sort(b1,new MyComparator());
 
+		Collections.sort(b1,(o1,o2)->
+				o1.getAuthorName().compareTo(o2.getAuthorName()));
+		return b1;
+
+//return b1;
+//		return(List<Blog>) blogRepository.findAll();
+
+	}
+//	private class MyComparator implements Comparator<Blog> {
+//		@Override
+//		public int compare(Blog o1, Blog o2) {
+//			return o1.getAuthorName().compareTo(o2.getAuthorName());
+//		}
+//	}
 	@Override
 	public Blog getBlogById(int id) throws BlogNotFoundException {
 		// TODO Auto-generated method stub
@@ -96,6 +117,7 @@ else{
 		}
 		return UpdatedBlog;
 	}
-	
-	
+
+
+
 }
